@@ -6,7 +6,7 @@ api_url = "http://ws.audioscrobbler.com/2.0/?format=json"
 
 @hook.command('b', autohelp=False)
 @hook.command(autohelp=False)
-def lastfm(inp, nick='', db=None, bot=None, notice=None):
+def band(inp, nick='', db=None, bot=None, notice=None):
     """band [band] -- Displays the band's informations
      from lastfm db."""
     api_key = bot.config.get("api_keys", {}).get("lastfm")
