@@ -1,8 +1,8 @@
+# vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4
 from util import hook, http, timesince
 from datetime import datetime
 
 api_url = "http://ws.audioscrobbler.com/2.0/?format=json"
-
 
 @hook.command('b', autohelp=False)
 @hook.command(autohelp=False)
@@ -19,10 +19,16 @@ def band(inp, nick='', db=None, bot=None, notice=None):
     if 'error' in r:
         return "Error: {}.".format(r["message"])
     out="No band named "+ inp
+    tags=[]
+    sims=[]
 
     if type(r) == dict:
         artist = r["artist"]
         if type(artist) ==dict:
-            out = artist["name"] +" has "+ artist["stats"]["plays"] + " plays by " + artist["stats"]["listeners"] + "listeners."
-
+            for tag in artist["tags"]["tag"]:
+                tags.append(tag["name"])
+            for sim in artist["similar"]["artist"]:
+                sims.append(sim["name"])
+            out = artist["name"] + " (" + artist["bio"]["placeformed"] + ") has "+ artist["stats"]["playcount"] + " plays by " + artist["stats"]["listeners"] + " listeners. Tags: " + ", ".join(tags) + ". Simimar artists: " + ", ".join(sims) + ". More info on " + artist["url"]
     return out
+
