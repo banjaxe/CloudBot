@@ -28,7 +28,7 @@ def gigs(inp, nick=None, say=None, me=None, msg=None, bot=None):
     llimit=str(r["events"]["@attr"]["total"] if r["events"]["@attr"]["total"] < maxgigs else maxgigs)
 
     if type(r) == dict and "event" in r["events"] and type(r["events"]["event"]) == list:
-        me("will headbang at these "+ llimit + "gigs with "+ nick +":")
+        #me("will headbang at these "+ llimit + " gigs with "+ nick +":")
         for event in r["events"]["event"]:
             headliner = event["artists"]["headliner"] if "headliner" in event["artists"] else "TBA"
             say(event["startDate"] + ":\tat " + event["venue"]["name"] + " (" + event["venue"]["location"]["city"] + ", " + event["venue"]["location"]["country"] + "), headliner: " + headliner + ", artists: " + ", ".join(event["artists"]["artist"]))
