@@ -10,9 +10,9 @@ from util import hook, http, timesince
 api_url = "http://ws.audioscrobbler.com/2.0/?format=json"
 maxgigs=5
 
-@hook.command('g', autohelp=False)
+@hook.command('gi', autohelp=False)
 @hook.command(autohelp=False)
-def gigs(inp, nick=None, say=None, me=None, msg=None, bot=None):
+def gigs(inp, conn=None, bot=None,nick=None, chan=None):
     """gigs [band] -- Displays the band's gigs
      from lastfm db."""
     api_key = bot.config.get("api_keys", {}).get("lastfm")
@@ -28,9 +28,9 @@ def gigs(inp, nick=None, say=None, me=None, msg=None, bot=None):
     llimit=str(r["events"]["@attr"]["total"] if r["events"]["@attr"]["total"] < maxgigs else maxgigs)
 
     if type(r) == dict and "event" in r["events"] and type(r["events"]["event"]) == list:
-        #me("will headbang at these "+ llimit + " gigs with "+ nick +":")
+        conn.send("PRIVMSG {} :\x01ACTION will headbang at these {} gigs with {}:\x01".format(chan,llimit,nick))
         for event in r["events"]["event"]:
             headliner = event["artists"]["headliner"] if "headliner" in event["artists"] else "TBA"
-            say(event["startDate"] + ":\tat " + event["venue"]["name"] + " (" + event["venue"]["location"]["city"] + ", " + event["venue"]["location"]["country"] + "), headliner: " + headliner + ", artists: " + ", ".join(event["artists"]["artist"]))
+            conn.send("PRIVMSG {} :{}:\t{} ({},{}), headliner: {}, artists: {}".format(chan,event["startDate"],event["venue"]["name"],event["venue"]["location"]["city"],event["venue"]["location"]["country"],headliner,", ".join(event["artists"]["artist"])))
     else:
-        msg(nick,"No gigs for " + inp + " :(")
+        conn.send("PRIVMSG {} :{}, No gigs for {} :(".format(chan,nick,inp))
