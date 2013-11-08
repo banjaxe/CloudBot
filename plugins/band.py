@@ -29,6 +29,7 @@ def band(inp, nick='', db=None, bot=None, notice=None):
                 tags.append(tag["name"])
             for sim in artist["similar"]["artist"]:
                 sims.append(sim["name"])
-            out = artist["name"] + " has "+ artist["stats"]["listeners"] + " listeners. Tags: " + ", ".join(tags) + ". Similar artists: " + ", ".join(sims) + ". More info on " + artist["url"]
+            placeformed=" ("+artist["bio"]["placeformed"] +")" if "placeformed" in artist["bio"] else ""
+            out = artist["name"] + placeformed + " has "+ artist["stats"]["playcount"] + " plays by " + artist["stats"]["listeners"] + " listeners. Tags: " + ", ".join(tags) + ". Simimar artists: " + ", ".join(sims) + ". More info on " + artist["url"]
     return out
 
