@@ -25,7 +25,7 @@ def gigs(inp, nick=None, say=None, me=None, msg=None, bot=None):
     if 'error' in r:
         return "Error: {}.".format(r["message"])
 
-    llimit=r["events"]["@attr"]["total"] if r["events"]["@attr"]["total"] < maxgigs else maxgigs
+    llimit=str(r["events"]["@attr"]["total"] if r["events"]["@attr"]["total"] < maxgigs else maxgigs)
 
     if type(r) == dict and "event" in r["events"] and type(r["events"]["event"]) == list:
         me("will headbang at these "+ llimit + "gigs with "+ nick +":")
