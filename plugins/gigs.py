@@ -8,7 +8,7 @@ from util import hook, http, timesince
 
 
 api_url = "http://ws.audioscrobbler.com/2.0/?format=json"
-limit=5
+maxgigs=5
 
 @hook.command('g', autohelp=False)
 @hook.command(autohelp=False)
@@ -20,15 +20,15 @@ def gigs(inp, nick=None, say=None, me=None, msg=None):
         return "error: no api key set"
 
     r = http.get_json(api_url, method="artist.getEvents",
-                             api_key=api_key, artist=inp,autocorrect=1,limit=limit)
+                             api_key=api_key, artist=inp,autocorrect=1,limit=maxgigs)
 
     if 'error' in r:
         return "Error: {}.".format(r["message"])
 
-    limit=r["@attr"]["total"] if r["@attr"]["total"] < limit else limit
+    llimit=r["@attr"]["total"] if r["@attr"]["total"] < maxgigs else maxgigs
 
     if type(r) == dict and "event" in r["events"] and type(r["events"]["event"]) == list:
-        me("will headbang at these "+ limit + "gigs with "+ nick +":")
+        me("will headbang at these "+ llimit + "gigs with "+ nick +":")
         for event in r["events"]["event"]:
             headliner = event["artists"]["headliner"] if "headliner" in event["artists"] else "TBA"
             say(event["startDate"] + ":\tat " + event["venue"]["name"] + " (" + event["venue"]["location"]["city"] + ", " + event["venue"]["location"]["country"] + "), headliner: " + headliner + ", artists: " + ", ".join(event["artists"]["artist"]))
