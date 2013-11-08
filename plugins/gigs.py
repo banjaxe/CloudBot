@@ -12,7 +12,7 @@ limit=5
 
 @hook.command('g', autohelp=False)
 @hook.command(autohelp=False)
-def gigs(inp, nick=None, say=None, me=None, msg=None):
+def gigs(inp, nick=None, say=None, me=None, msg=None, bot=None):
     """gigs [band] -- Displays the band's gigs
      from lastfm db."""
     api_key = bot.config.get("api_keys", {}).get("lastfm")
