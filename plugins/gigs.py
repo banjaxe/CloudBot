@@ -31,6 +31,6 @@ def gigs(inp, conn=None, bot=None,nick=None, chan=None):
         conn.send("PRIVMSG {} :\x01ACTION will headbang at these {} gigs with {}:\x01".format(chan,llimit,nick))
         for event in r["events"]["event"]:
             headliner = event["artists"]["headliner"] if "headliner" in event["artists"] else "TBA"
-            conn.send("PRIVMSG {} :{}:\t{} ({},{}), headliner: {}, artists: {}".format(chan,event["startDate"],event["venue"]["name"],event["venue"]["location"]["city"],event["venue"]["location"]["country"],headliner,", ".join(event["artists"]["artist"])))
+            conn.send(u"PRIVMSG {} :{}:\t{} ({},{}), headliner: {}, artists: {}".format(chan,event["startDate"],event["venue"]["name"],event["venue"]["location"]["city"],event["venue"]["location"]["country"],headliner,", ".join(event["artists"]["artist"])))
     else:
-        conn.send("PRIVMSG {} :{}, No gigs for {} :(".format(chan,nick,inp))
+        conn.send(u"PRIVMSG {} :{}, No gigs for {} :(".format(chan,nick,inp))
