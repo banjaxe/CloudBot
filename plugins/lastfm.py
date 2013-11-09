@@ -66,9 +66,9 @@ def lastfm(inp, nick='', db=None, bot=None, notice=None):
 
     out = '{} {} "{}"'.format(user, status, title)
     if artist:
-        out += " by \x02{}\x0f".format(artist)
+        out += u' by \x02{}\x0f'.format(artist).encode('utf-8')
     if album:
-        out += " from the album \x02{}\x0f".format(album)
+        out += u' from the album \x02{}\x0f'.format(album).encode('utf-8')
 
     # append ending based on what type it was
     out += ending
