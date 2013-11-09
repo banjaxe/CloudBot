@@ -69,7 +69,7 @@ def run(func, input):
     else:
         out = func(input.inp)
     if out is not None:
-        input.reply(unicode(out))
+        input.reply(unicode(out, 'utf8'))
 
 
 def do_sieve(sieve, bot, input, func, type, args):
