@@ -31,7 +31,7 @@ def plays(band, nick='', db=None, bot=None, notice=None):
  
     out = '{} has {} plays'.format(user, plays)
     if band:
-        out += " by \x02{}\x0f".format(band)
+        out += " by \x02{}\x0f".format(band.encode("utf-8"))
  
  
     return out
