@@ -10,16 +10,16 @@ def plays(band, nick='', db=None, bot=None, notice=None):
     api_key = bot.config.get("api_keys", {}).get("lastfm")
     if not api_key:
         return "error: no api key set"
- 
+
     user = db.execute("select acc from lastfm where nick=lower(?)", (nick,)).fetchone()
        
     if not user:
-        notice(lastfm.__doc__)
-        return
-               
-    user = user[0]
- 
+        user = nick
+    else:
+        user = user[0]
+
     response = http.get_json(api_url, method="user.getartisttracks", api_key=api_key, user=user, artist=band)
+
     if 'error' in response:
         return "Error: {}.".format(response["message"])
  
