@@ -1,6 +1,6 @@
 from util import hook, http, timesince
-from datetime import datetime
-#import time
+from datetime import datetime, timedelta
+import time
 
 api_url = "http://ws.audioscrobbler.com/2.0/?format=json"
 
@@ -26,10 +26,8 @@ def top(inp, nick='', db=None, bot=None, notice=None):
     else:
         user = user[0]
 
-    #print time.time()
-
-    response = http.get_json(api_url, method="user.getweeklyartistchart",
-                             api_key=api_key, user=user, {"from": ''}, to='', limit=5)
+    response = http.get_json(api_url, method="user.gettopartists",
+                             api_key=api_key, user=user, period = '7day', limit=5)
 
     if 'error' in response:
         return "Error: {}.".format(response["message"])
@@ -39,10 +37,8 @@ def top(inp, nick='', db=None, bot=None, notice=None):
 
     out = u'Top 5 artists this week for {}: ('.format(user)
 
-    mylen = len(response["weeklyartistchart"]["artist"])
-
-    if mylen > 1:
-        for artist in response["weeklyartistchart"]["artist"]:
+    if len(response["topartists"]["artist"]) > 1:
+        for artist in response["topartists"]["artist"]:
             topArtists.append(artist["name"])
 
         lastArtist = topArtists.pop()
