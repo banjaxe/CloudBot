@@ -102,17 +102,19 @@ def mareviews(inp, conn=None, bot=None,nick=None, chan=None):
             return u'Could not calculate average review for {} or too many bands with the same name. Use "," to seperate artist, album.'.format(band)
     else:
         if type(reviews["aaData"]) == list  and len(reviews["aaData"]) > 0:
+            fullAlbum = ""
             for review in reviews["aaData"]:
                 ulink = review[0]
                 alink = BeautifulSoup(ulink).findAll("a")
                 text = alink[0].contents[0].lower()
-                if text == album.lower():
+                if text == album.lower() or text.find(album) != -1:
                     percentages.append(int(review[1].replace("%", "")))
+                    fullAlbum = alink[0].contents[0]
 
             if len(percentages) > 0:
                 average = reduce(lambda x, y: x + y, percentages) / len(percentages)
 
-                return u'The album \x02{}\x0f by \x02{}\x0f has an average review of \x02{}\x0f%'.format(album, band, average)
+                return u'The album \x02{}\x0f by \x02{}\x0f has an average review of \x02{}\x0f%'.format(fullAlbum, band, average)
             else:
                 return u'Could not find the album {} for the band {}'.format(album, band)
         else:
