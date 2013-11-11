@@ -12,16 +12,23 @@ def band(inp, nick='', db=None, bot=None, notice=None):
     if not api_key:
         return "error: no api key set"
 
-    user = db.execute("select acc from lastfm where nick=lower(?)", (inp,)).fetchone()
+    qUser = db.execute("select acc from lastfm where nick=lower(?)", (inp,)).fetchone()
 
-    if not user:
-        user = inp
+    if not qUser:
+        qUser = inp
     else:
-        user = user[0]
+        qUser = qUser[0]
+
+    nUser = db.execute("select acc from lastfm where nick=lower(?)", (nick,)).fetchone()
+
+    if not nUser:
+        nUser = nick
+    else:
+        nuser = nUser[0]
 
 
     response = http.get_json(api_url, method="tasteometer.compare",
-                             api_key=api_key, type1="user", type2="user", value1=nick, value2=user, limit=5)
+                             api_key=api_key, type1="user", type2="user", value1=nuser, value2=qUser, limit=5)
 
     if 'error' in response:
         return "Error: {}.".format(response["message"])
@@ -31,7 +38,7 @@ def band(inp, nick='', db=None, bot=None, notice=None):
     if score == 0:
         out = "You and {} have no artists in common".format(inp)
     else:
-        out = "You and {} have {}% in common: artists(".format(inp, score)
+        out = "You and {} have {}% in common: artists(".format(qUser, score)
 
         artists = []
 
