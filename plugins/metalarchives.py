@@ -1,6 +1,7 @@
 from util import hook, http, timesince
 from datetime import datetime
 from BeautifulSoup import BeautifulSoup
+import re
 
 baseurl = "http://www.metal-archives.com/"
 
@@ -42,3 +43,52 @@ def maband(inp, conn=None, bot=None,nick=None, chan=None):
         conn.send(u"PRIVMSG {} :\x02{}\x0f - {} from {} (More info: {})".format(chan, bandName, bandGenre, bandCountry, bandLink))
 
     return u"{} bands containing the name {}".format(len(bands), inp)
+
+@hook.command('mareviews', autohelp=False)
+@hook.command(autohelp=False)
+def mareviews(inp, conn=None, bot=None,nick=None, chan=None):
+    """marating [band] -- Displays band rating
+     from metal archives."""
+
+    if not inp:
+        return "You must specify a band"
+
+    response = http.get_json(baseurl + "search/ajax-advanced/searching/bands",
+                             bandName=inp, exactBandMatch=0, sEcho=1, iColumns=3,
+                             sColumns='', iDisplayStart=0, iDisplayLength=200, sNames=',,')
+
+    if response["error"] != "":
+        return "Error: {}.".format(response["error"])
+
+    if response["iTotalRecords"] == 0:
+        return u"No bands were found named {}".format(inp)
+
+    bands = response["aaData"]
+
+    out = ""
+
+    band = BeautifulSoup(bands[0][0]).findAll("a")[0].contents[0]
+    href = BeautifulSoup(bands[0][0]).findAll("a")[0]["href"]
+
+    regex1 = re.compile("(?<=bands/).*\/")
+    rawBand = regex1.findall(href)[0]
+
+    regex2 = re.compile("(?<={}/).*".format(rawBand.replace("/", "")))
+    bandId = regex2.findall(href)[0]
+
+    reviews = http.get_json(baseurl + "review/ajax-list-band/id/{}/json/1".format(bandId),
+                             sEcho=1, iColumns=4, sColums='', iDisplayStart=0, iDisplayLength=200,
+                             mDataProp_0=0, mDataProp_1=1, mDataProp_2=2, mDataProp_3=3, iSortingCols=1, iSortCol_0=3,
+                             sSortDir_0="desc", bSortable_0="true", bSortable_1="true", bSortable_2="true",
+                             bSortable_3="true")
+
+    percentages = []
+    if type(reviews["aaData"]) == list  and len(reviews["aaData"]) > 0:
+        for review in reviews["aaData"]:
+            percentages.append(int(review[1].replace("%", "")))
+
+        average = reduce(lambda x, y: x + y, percentages) / len(percentages)
+
+        return u'\x02{}\x0f has an average review of \x02{}\x0f% based on their album reviews'.format(band, average)
+    else:
+        return u'Could not calculate average review for {} or too many bands with the same name'.format(band)
