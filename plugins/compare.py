@@ -36,9 +36,9 @@ def band(inp, nick='', db=None, bot=None, notice=None):
     score = round(float(response["comparison"]["result"]["score"]) * 100, 1)
 
     if score == 0:
-        out = "You and {} have no artists in common".format(inp)
+        out = u"You and {} have no artists in common".format(inp)
     else:
-        out = "You and {} have {}% in common: artists(".format(qUser, score)
+        out = u"You and {} have {}% in common: artists(".format(qUser, score)
 
         artists = []
 
@@ -48,9 +48,9 @@ def band(inp, nick='', db=None, bot=None, notice=None):
         lastArtist = artists.pop()
 
         for artist in artists:
-            out += "{}, ".format(artist)
+            out += u"{}, ".format(artist)
         else:
-            out += "{})".format(lastArtist)
+            out += u"{})".format(lastArtist)
 
 
-    return out.encode("utf-8")
+    return out
