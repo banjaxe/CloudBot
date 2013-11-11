@@ -53,6 +53,15 @@ def mareviews(inp, conn=None, bot=None,nick=None, chan=None):
     if not inp:
         return "You must specify a band"
 
+    comms = inp.split(",")
+
+    album = None
+    if(len(comms) == 1):
+        inp = comms[0]
+    else:
+        inp = comms[0]
+        album = str(comms[1]).strip()
+
     response = http.get_json(baseurl + "search/ajax-advanced/searching/bands",
                              bandName=inp, exactBandMatch=0, sEcho=1, iColumns=3,
                              sColumns='', iDisplayStart=0, iDisplayLength=200, sNames=',,')
@@ -64,8 +73,6 @@ def mareviews(inp, conn=None, bot=None,nick=None, chan=None):
         return u"No bands were found named {}".format(inp)
 
     bands = response["aaData"]
-
-    out = ""
 
     band = BeautifulSoup(bands[0][0]).findAll("a")[0].contents[0]
     href = BeautifulSoup(bands[0][0]).findAll("a")[0]["href"]
@@ -83,12 +90,30 @@ def mareviews(inp, conn=None, bot=None,nick=None, chan=None):
                              bSortable_3="true")
 
     percentages = []
-    if type(reviews["aaData"]) == list  and len(reviews["aaData"]) > 0:
-        for review in reviews["aaData"]:
-            percentages.append(int(review[1].replace("%", "")))
+    if not album:
+        if type(reviews["aaData"]) == list  and len(reviews["aaData"]) > 0:
+            for review in reviews["aaData"]:
+                percentages.append(int(review[1].replace("%", "")))
 
-        average = reduce(lambda x, y: x + y, percentages) / len(percentages)
+            average = reduce(lambda x, y: x + y, percentages) / len(percentages)
 
-        return u'\x02{}\x0f has an average review of \x02{}\x0f% based on their album reviews'.format(band, average)
+            return u'\x02{}\x0f has an average review of \x02{}\x0f% based on their album reviews. Use "," to seperate artist, album.'.format(band, average)
+        else:
+            return u'Could not calculate average review for {} or too many bands with the same name. Use "," to seperate artist, album.'.format(band)
     else:
-        return u'Could not calculate average review for {} or too many bands with the same name'.format(band)
+        if type(reviews["aaData"]) == list  and len(reviews["aaData"]) > 0:
+            for review in reviews["aaData"]:
+                ulink = review[0]
+                alink = BeautifulSoup(ulink).findAll("a")
+                text = alink[0].contents[0].lower()
+                if text == album.lower():
+                    percentages.append(int(review[1].replace("%", "")))
+
+            if len(percentages) > 0:
+                average = reduce(lambda x, y: x + y, percentages) / len(percentages)
+
+                return u'The album \x02{}\x0f by \x02{}\x0f has an average review of \x02{}\x0f%'.format(album, band, average)
+            else:
+                return u'Could not find the album {} for the band {}'.format(album, band)
+        else:
+            return u'Could not calculate average review for {} or too many bands with the same name'.format(band)
