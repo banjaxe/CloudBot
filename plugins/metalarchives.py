@@ -4,6 +4,7 @@ from BeautifulSoup import BeautifulSoup
 import re
 
 baseurl = "http://www.metal-archives.com/"
+api_url = "http://ws.audioscrobbler.com/2.0/?format=json"
 
 @hook.command('maband', autohelp=False)
 @hook.command(autohelp=False)
@@ -57,10 +58,12 @@ def mareviews(inp, conn=None, bot=None,nick=None, chan=None):
 
     album = None
     if(len(comms) == 1):
-        inp = comms[0]
+        inp = comms[0].strip()
     else:
-        inp = comms[0]
-        album = str(comms[1]).strip()
+        inp = comms[0].strip()
+        album = comms[1]
+
+    album = str(album).strip()
 
     response = http.get_json(baseurl + "search/ajax-advanced/searching/bands",
                              bandName=inp, exactBandMatch=0, sEcho=1, iColumns=3,
@@ -119,6 +122,6 @@ def mareviews(inp, conn=None, bot=None,nick=None, chan=None):
                 else:
                     return u'Could not find the album {} for the band {}'.format(album, band)
             else:
-                return u'The album {} by {} has no reviews.'.format(fullAlbum, band)
+                return u'Could not find reviews for album like "{}" by {}.'.format(album, band)
         else:
             return u'Could not calculate average review for {} or too many bands with the same name'.format(band)
