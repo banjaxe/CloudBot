@@ -1,8 +1,12 @@
 from util import hook, http
 import json
 import urllib2
+import git
+import os
+import sys
+import time
 
-shortcuts = {"cloudbot": "ClouDev/CloudBot"}
+shortcuts = {"cloudbot": "banjaxe/CloudBot"}
 
 
 def truncate(msg):
@@ -116,3 +120,26 @@ def gitio(inp):
 
     # return location, minus the first 10 chars
     return location[10:]
+
+@hook.command
+def gitupdate(inp, conn=None, bot=None,nick=None, chan=None):
+
+    conn.send(u"PRIVMSG {} :Doing github update.".format(chan))
+
+    dir = os.getcwd()
+    repo = git.Repo(dir)
+    origin = repo.remotes.origin
+    origin.fetch()
+    origin.pull()
+
+    conn.send(u"PRIVMSG {} :Github update complete. Going down like your mom.".format(chan))
+
+    for botcon in bot.conns:
+        if inp:
+            bot.conns[botcon].cmd("QUIT", ["Restarted by {} ({})".format(nick, inp)])
+        else:
+            bot.conns[botcon].cmd("QUIT", ["Restarted by {}.".format(nick)])
+    time.sleep(5)
+    args = sys.argv[:]
+    args.insert(0, sys.executable)
+    os.execv(sys.executable, args)
