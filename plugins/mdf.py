@@ -4,10 +4,10 @@ from datetime import datetime
 
 
 @hook.command(autohelp=False)
-def mdf(inp, nick='', db=None, bot=None, notice=None):
+def mdf(inp):
     """mdf -- Displays countdown before Maryland Death Fest 2014
     """
 
-    delta = datetime.datetime(2014, 05, 22) - datetime.datetime.now()
+    delta = datetime(2014, 05, 22) - datetime.now()
 
-    return "{} days before MDF 2014 !".format(delta.days)
+    return "{} days before MDF 2014!".format(delta.days)
