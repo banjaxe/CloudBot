@@ -121,7 +121,7 @@ def gitio(inp):
     # return location, minus the first 10 chars
     return location[10:]
 
-@hook.command
+@hook.command(autohelp=False, permissions=["botcontrol"])
 def gitupdate(inp, conn=None, bot=None,nick=None, chan=None):
 
     conn.send(u"PRIVMSG {} :Doing github update.".format(chan))
