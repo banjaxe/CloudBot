@@ -126,11 +126,14 @@ def gitupdate(inp, conn=None, bot=None,nick=None, chan=None):
 
     conn.send(u"PRIVMSG {} :Doing github update.".format(chan))
 
-    dir = os.getcwd()
-    repo = git.Repo(dir)
-    origin = repo.remotes.origin
-    origin.fetch()
-    origin.pull()
+    try:
+        gitdir = os.getcwd()
+        repo = git.Repo(gitdir)
+        origin = repo.remotes.origin
+        origin.fetch()
+        origin.pull()
+    except Exception:
+        return "There was a problem updating. Is your git directory clean?"
 
     conn.send(u"PRIVMSG {} :Github update complete. Going down like your mom.".format(chan))
 
