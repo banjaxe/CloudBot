@@ -97,7 +97,7 @@ def mareviews(inp, conn=None, bot=None,nick=None, chan=None):
 
             average = reduce(lambda x, y: x + y, percentages) / len(percentages)
 
-            return u'\x02{}\x0f has an average review of \x02{}\x0f% based on their album reviews. Use "," to seperate artist, album.'.format(band, average)
+            return u'\x02{}\x0f has an average review of \x02{}\x0f% based on their album reviews. Use "," to separate artist, album.'.format(band, average)
         else:
             return u'Could not calculate average review for {} or too many bands with the same name. Use "," to seperate artist, album.'.format(band)
     else:
