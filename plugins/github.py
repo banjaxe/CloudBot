@@ -131,6 +131,7 @@ def gitupdate(inp, conn=None, bot=None,nick=None, chan=None):
         repo = git.Repo(gitdir)
         origin = repo.remotes.origin
         origin.fetch()
+        repo.head.reset(working_tree=True)
         origin.pull()
     except Exception:
         return "There was a problem updating. Is your git directory clean?"
