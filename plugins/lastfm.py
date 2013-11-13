@@ -1,3 +1,4 @@
+# vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4
 from util import hook, http, timesince
 from datetime import datetime
 
@@ -234,7 +235,12 @@ def gigs(inp, conn=None, bot=None,nick=None, chan=None):
     if type(r) == dict and "event" in r["events"] and type(r["events"]["event"]) == list:
         conn.send("PRIVMSG {} :\x01ACTION will headbang at these {} gigs with {}:\x01".format(chan,llimit,nick))
         for event in r["events"]["event"]:
-            headliner = event["artists"]["headliner"] if "headliner" in event["artists"] else "TBA"
-            conn.send(u"PRIVMSG {} :{}:\t{} ({},{}), headliner: {}, artists: {}".format(chan,event["startDate"],event["venue"]["name"],event["venue"]["location"]["city"],event["venue"]["location"]["country"],headliner,", ".join(event["artists"]["artist"])))
+            cancelled=" [CANCELLED] "  if event["cancelled"] == "1" else ""
+            if "headliner" in event["artists"]:
+                headliner = event["artists"]["headliner"]
+                event["artists"]["artist"].remove(headliner)
+            else:
+                headliner="TBA"
+            conn.send(u"PRIVMSG {} :{}:{}{} ({},{}), headliner: \x02{}\x0f with {}".format(chan,event["startDate"],cancelled,event["venue"]["name"],event["venue"]["location"]["city"],event["venue"]["location"]["country"],headliner.encode('utf-8'),", ".join(event["artists"]["artist"]).encode('utf-8')))
     else:
         conn.send(u"PRIVMSG {} :{}, No gigs for {} :(".format(chan,nick,inp))
