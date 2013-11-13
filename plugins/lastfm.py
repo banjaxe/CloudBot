@@ -241,6 +241,6 @@ def gigs(inp, conn=None, bot=None,nick=None, chan=None):
                 event["artists"]["artist"].remove(headliner)
             else:
                 headliner="TBA"
-            conn.send(u"PRIVMSG {} :{}: {}{} ({}, {}), headliner: \x02{}\x0f with {}".format(chan,event["startDate"],cancelled,event["venue"]["name"],event["venue"]["location"]["city"],event["venue"]["location"]["country"],headliner,", ".join(event["artists"]["artist"])).encode('utf-8'))
+            conn.send(u"PRIVMSG {} :{}: {}{} ({}, {}), headliner: \x02{}\x0f with {}".format(chan,event["startDate"],cancelled,event["venue"]["name"],event["venue"]["location"]["city"],event["venue"]["location"]["country"],headliner,", ".join(event["artists"]["artist"])))
     else:
         conn.send(u"PRIVMSG {} :{}, No gigs for {} :(".format(chan,nick,inp).encode('utf-8'))
