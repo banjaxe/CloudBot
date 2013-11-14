@@ -27,7 +27,7 @@ def plays(band, nick='', db=None, bot=None, notice=None):
         return '"{}" has never listened to that band. Poserfalse'.format(user)
  
     plays = response["artisttracks"]["@attr"]["items"]
-    band = response["artisttracks"]["track"][0]["artist"]["#text"]
+    band = response["artisttracks"]["track"][0]["artist"]["#text"] if len(response["artisttracks"]["track"]) > 0 else inp
  
     out = '{} has {} plays'.format(user, plays)
     if band:
