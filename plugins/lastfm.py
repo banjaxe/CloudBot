@@ -244,3 +244,39 @@ def gigs(inp, conn=None, bot=None,nick=None, chan=None):
             conn.send(u"PRIVMSG {} :{}: {}{} ({}, {}), headliner: \x02{}\x0f with {}".format(chan,event["startDate"],cancelled,event["venue"]["name"],event["venue"]["location"]["city"],event["venue"]["location"]["country"],headliner,", ".join(event["artists"]["artist"])))
     else:
         conn.send(u"PRIVMSG {} :{}, No gigs for {} :(".format(chan,nick,inp).encode('utf-8'))
+
+@hook.command(autohelp=False)
+def geogigs(inp, conn=None, bot=None,nick=None, chan=None):
+    """geogigs [location] -- Displays gigs in your area
+     from lastfm db."""
+
+    maxgigs=5
+    style='metal'
+    not_style='metalcore'
+
+    api_key = bot.config.get("api_keys", {}).get("lastfm")
+    if not api_key:
+        return "error: no api key set"
+
+    r = http.get_json(api_url, method="geo.getEvents",
+                             api_key=api_key, location=inp,tag=style,limit=maxgigs)
+
+    if 'error' in r:
+        return "Error: {}.".format(r["message"])
+
+    llimit=str(r["events"]["@attr"]["total"] if r["events"]["@attr"]["total"] < maxgigs else maxgigs)
+
+    if type(r) == dict and "event" in r["events"] and type(r["events"]["event"]) == list:
+        conn.send("PRIVMSG {} :\x01ACTION will headbang at these {} gigs with {}:\x01".format(chan,llimit,nick))
+        for event in r["events"]["event"]:
+            cancelled="[CANCELLED] "  if event["cancelled"] == "1" else ""
+            if "headliner" in event["artists"]:
+                headliner = event["artists"]["headliner"]
+                event["artists"]["artist"].remove(headliner)
+            else:
+                headliner="TBA"
+            # Pleease
+            if not_style not in event["tags"]["tag"]:
+                conn.send(u"PRIVMSG {} :{}: {}{} ({}, {}), headliner: \x02{}\x0f with {} ({})".format(chan,event["startDate"],cancelled,event["venue"]["name"],event["venue"]["location"]["city"],event["venue"]["location"]["country"],headliner,", ".join(event["artists"]["artist"]),", ".join(event["tagss"]["tag"])))
+    else:
+        conn.send(u"PRIVMSG {} :{}, No gigs for {} :(".format(chan,nick,inp))
