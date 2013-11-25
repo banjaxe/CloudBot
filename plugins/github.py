@@ -131,6 +131,8 @@ def gitupdate(inp, conn=None, bot=None,nick=None, chan=None):
     origin = repo.remotes.origin
     origin.fetch()
     origin.pull()
+	
+	print "Test"
 
     conn.send(u"PRIVMSG {} :Github update complete. Going down like your mom.".format(chan))
 
