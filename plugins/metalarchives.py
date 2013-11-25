@@ -50,8 +50,6 @@ def maband(inp, conn=None, bot=None,nick=None, chan=None):
 def mareviews(inp, conn=None, bot=None,nick=None, chan=None):
     """marating [band] -- Displays band rating
      from metal archives."""
-
-	 print "Test"
 	 
     if not inp:
         return "You must specify a band"
