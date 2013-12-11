@@ -46,17 +46,17 @@ def lastfm(inp, nick='', db=None, bot=None, notice=None):
         # if the user is listening to something, the tracks entry is a list
         # the first item is the current track
         track = tracks[0]
-        status = 'is listening to'
+        status = u'is listening to'
         ending = '.'
     elif type(tracks) == dict:
         # otherwise, they aren't listening to anything right now, and
         # the tracks entry is a dict representing the most recent track
         track = tracks
-        status = 'last listened to'
+        status = u'last listened to'
         # lets see how long ago they listened to it
         time_listened = datetime.fromtimestamp(int(track["date"]["uts"]))
         time_since = timesince.timesince(time_listened)
-        ending = ' ({} ago)'.format(time_since)
+        ending = u' ({} ago)'.format(time_since)
 
     else:
         return "error: could not parse track listing"
@@ -65,11 +65,11 @@ def lastfm(inp, nick='', db=None, bot=None, notice=None):
     album = track["album"]["#text"]
     artist = track["artist"]["#text"]
 
-    out = '{} {} "{}"'.format(user, status, title)
+    out = u'{} {} "{}"'.format(user, status, title)
     if artist:
-        out += u' by \x02{}\x0f'.format(artist).encode('utf-8')
+        out += u' by \x02{}\x0f'.format(artist)
     if album:
-        out += u' from the album \x02{}\x0f'.format(album).encode('utf-8')
+        out += u' from the album \x02{}\x0f'.format(album)
 
     # append ending based on what type it was
     out += ending
@@ -155,10 +155,20 @@ def band(inp, nick='', db=None, bot=None, notice=None):
     if type(r) == dict:
         artist = r["artist"]
         if type(artist) ==dict:
-            for tag in artist["tags"]["tag"]:
-                tags.append(tag["name"])
-            for sim in artist["similar"]["artist"]:
-                sims.append(sim["name"])
+            if type(artist["tags"]) == dict:
+                for tag in artist["tags"]["tag"]:
+                    tags.append(tag["name"])
+            else:
+                tags.append(u"No tags available")
+
+            if type(artist["similar"]["artist"]) == list:
+                for sim in artist["similar"]["artist"]:
+                    sims.append(sim["name"])
+            elif type(artist["similar"]["artist"]) == dict:
+                sims.append(artist["similar"]["artist"]["name"])
+            else:
+                sims.append(u"No similar artists found.")
+
             placeformed=" ("+artist["bio"]["placeformed"] +")" if "placeformed" in artist["bio"] else ""
             out = (artist["name"] + placeformed + " has "+ artist["stats"]["playcount"] + " plays by " + artist["stats"]["listeners"] + " listeners. Tags: " + ", ".join(tags) + ". Similar artists: " + ", ".join(sims) + ". More info on " + artist["url"]).encode("utf-8")
     return out
