@@ -161,13 +161,16 @@ def band(inp, nick='', db=None, bot=None, notice=None):
             else:
                 tags.append(u"No tags available")
 
-            if type(artist["similar"]["artist"]) == list:
-                for sim in artist["similar"]["artist"]:
-                    sims.append(sim["name"])
-            elif type(artist["similar"]["artist"]) == dict:
-                sims.append(artist["similar"]["artist"]["name"])
+            if type(artist["similar"]) == dict:
+                if type(artist["similar"]["artist"]) == list:
+                    for sim in artist["similar"]["artist"]:
+                        sims.append(sim["name"])
+                elif type(artist["similar"]["artist"]) == dict:
+                    sims.append(artist["similar"]["artist"]["name"])
+                else:
+                    sims.append(u"No similar artists found")
             else:
-                sims.append(u"No similar artists found.")
+                sims.append(u"No similar artists found")
 
             placeformed=" ("+artist["bio"]["placeformed"] +")" if "placeformed" in artist["bio"] else ""
             out = (artist["name"] + placeformed + " has "+ artist["stats"]["playcount"] + " plays by " + artist["stats"]["listeners"] + " listeners. Tags: " + ", ".join(tags) + ". Similar artists: " + ", ".join(sims) + ". More info on " + artist["url"]).encode("utf-8")
