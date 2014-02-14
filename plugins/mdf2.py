@@ -14,4 +14,4 @@ def mdf2(inp, conn=None, bot=None,nick=None, chan=None):
     conn.send(u"PRIVMSG {} :{}), headliner: \x02{}\x0f{} ({})".format(chan, "MDF 2014 cancelled :("))
     time.sleep(3)
     return "{} days before MDF 2014!".format(delta.days)
-    conn.send(u"PRIVMSG {} :Just kidding. {} days before MDF 2014!), headliner: \x02{}\x0f{} ({})".format(chan,delta.days)
+    conn.send(u"PRIVMSG {} :Just kidding. {} days before MDF 2014!), headliner: \x02{}\x0f{} ({})".format(chan,delta.days))
