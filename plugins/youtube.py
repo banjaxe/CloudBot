@@ -10,7 +10,7 @@ youtube_re = (r'(?:youtube.*?(?:v=|/v/)|youtu\.be/|yooouuutuuube.*?id=)'
 base_url = 'http://gdata.youtube.com/feeds/api/'
 api_url = base_url + 'videos/{}?v=2&alt=jsonc'
 search_api_url = base_url + 'videos?v=2&alt=jsonc&max-results=1'
-video_url = "http://youtu.be/%s"
+video_url = "http://youtube.com/v/%s"
 
 
 def get_video_description(video_id):
