@@ -1,0 +1,9 @@
+import re
+
+from util import hook
+
+sedreg = (r's\/(.+)\/(.+)', '([-_a-zA-Z0-9]+)')
+
+@hook.regex(*sedreg)
+def dosed(match):
+	return "Matched"

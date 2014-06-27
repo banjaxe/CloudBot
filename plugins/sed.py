@@ -2,7 +2,7 @@ import re
 
 from util import hook
 
-sedreg = (r's\/(.+)\/(.+)'
+sedreg = (r'^s\/(.+)\/(.+)'
 	'([-_a-zA-Z0-9]+)', re.I|re.S)
 
 matchany = (r'.+'
