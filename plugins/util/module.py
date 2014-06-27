@@ -13,7 +13,7 @@ willie.module.rate
 willie.module.example
 """
 #Copyright 2013, Ari Koivula, <ari@koivu.la>
-#Copyright © 2013, Elad Alfassa <elad@fedoraproject.org>
+#Copyright 2013, Elad Alfassa <elad@fedoraproject.org>
 #Copyright 2013, Lior Ramati <firerogue517@gmail.com>
 #Licensed under the Eiffel Forum License 2.
 

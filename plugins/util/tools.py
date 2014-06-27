@@ -6,7 +6,7 @@ in Willie modules.
 
 tools.py - Willie misc tools
 Copyright 2008, Sean B. Palmer, inamidst.com
-Copyright © 2012, Elad Alfassa <elad@fedoraproject.org>
+Copyright 2012, Elad Alfassa <elad@fedoraproject.org>
 Copyright 2012, Edward Powell, embolalia.net
 Licensed under the Eiffel Forum License 2.
 
