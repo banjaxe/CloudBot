@@ -70,8 +70,8 @@ def lastfm(inp, nick='', db=None, bot=None, notice=None):
     link = track["url"]
     linkshort = web.isgd(link)
 
-    title2 = str(title)
-    artist2 = str(artist)
+    title2 = unicode(title)
+    artist2 = unicode(artist)
 
     response2 = http.get_json(api_url, method="track.getinfo",
                               api_key=api_key,track=title2, artist=artist2, username=user,  autocorrect=1)
