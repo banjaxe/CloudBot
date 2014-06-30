@@ -2,6 +2,7 @@
 from util import hook, http, timesince, web
 from datetime import datetime
 import time
+import re
 
 api_url = "http://ws.audioscrobbler.com/2.0/?format=json"
 
@@ -90,20 +91,39 @@ def lastfm(inp, nick='', db=None, bot=None, notice=None):
 
 
     if "tag" in track2["toptags"]:
-        genres1 = track2["toptags"]["tag"][:]
+        genres1 = track2["toptags"]["tag"]
         genresstr = str(genres1)
         #First genre
         genres3 = genresstr.split("u'name': u'" ,1)[1]
         genres4 = genres3.split("'",1)[0]
+        genres = genres4
+        
+    else:
+        genres = "(No tags found)"
+    try:
         #Second genre
         genres5 = genres3.split("u'name': u'", 1)[1]
         genres6 = genres5.split("'",1)[0]
+        genres = genres4, genres6
+        genres = str(genres)
+        genres = genres.replace("'", "")
+    except UnboundLocalError:
+        genres = "(No tags found)"
+    except IndexError:
+        genres = '({})'.format(genres)
+        
+    try:
         #Third genre
         genres7 = genres5.split("u'name': u'", 1)[1]
         genres8 = genres7.split("'",1)[0]
-        genres = '({}, {}, {})'.format(genres4, genres6, genres8)
-    else:
-        genres = "(No tags found)"
+        genres = genres4, genres6, genres8
+        genres = str(genres)
+        genres = genres.replace("'", "")
+    except UnboundLocalError:
+        genres = '{}'.format(genres)
+    except IndexError:
+        genres = '{}'.format(genres)
+    
 
         
     length1 = track2["duration"]
@@ -285,6 +305,111 @@ def top(inp, nick='', db=None, bot=None, notice=None):
         out += u"{})".format(lastArtist)
 
     return out
+
+
+@hook.command('genre', autohelp=False)
+@hook.command(autohelp=False)
+def genre(inp, nick='', db=None, bot=None, notice=None):
+    """genre -- Displays information for specified genre
+    from last.fm db. """
+
+    api_key = bot.config.get("api_keys", {}).get("lastfm")
+    if not api_key:
+        return "error: no api key set"
+
+    genretag = inp
+
+    response = http.get_json(api_url, method="tag.search",
+                             api_key=api_key, tag=genretag, limit=1)
+
+    if 'error' in response:
+        return "Error: {}.".format(response["message"])
+
+    tagdetails = response["results"]["tagmatches"]
+
+    
+    if "url" in tagdetails["tag"]:
+        link = tagdetails["tag"]["url"]
+        linkshort = web.isgd(link)
+        tagname = response["results"]["opensearch:Query"]["searchTerms"]
+        tagname = tagname.title()
+    else:
+        return "Error: No such genre, check spelling."
+
+    responsesimilar = http.get_json(api_url, method="tag.getsimilar",
+                                    api_key=api_key, tag=genretag)
+
+    tagsimilar = responsesimilar["similartags"]["tag"]
+
+    simgenstr = str(tagsimilar)
+    
+    if "name" in simgenstr:
+        #First genre
+        simgen1 = simgenstr.split("u'name': u'" ,1)[1]
+        simgen2 = simgen1.split("'",1)[0]
+        #Second genre
+        simgen3 = simgen1.split("u'name': u'", 1)[1]
+        simgen4 = simgen3.split("'",1)[0]
+        #Third genre
+        simgen5 = simgen3.split("u'name': u'", 1)[1]
+        simgen6 = simgen5.split("'",1)[0]
+        similartag = '{}, {}, {}'.format(simgen2, simgen4, simgen6)
+    else: 
+        return "Error: No such genre, check spelling."
+
+
+    responsetop = http.get_json(api_url, method="tag.gettopartists",
+                                api_key=api_key, tag=genretag)
+
+    tagtopartist = responsetop["topartists"]["artist"]
+
+    topartstr = str(tagtopartist)
+    #First artist
+    topart1 = topartstr.split("u'name': u'" ,1)[1]
+    topart2 = topart1.split("'",1)[0]
+    #Second artist
+    topart3 = topart1.split("u'name': u'", 1)[1]
+    topart4 = topart3.split("'",1)[0]
+    #Third artist
+    topart5 = topart3.split("u'name': u'", 1)[1]
+    topart6 = topart5.split("'",1)[0]
+    #Fourth artist
+    topart7 = topart5.split("u'name': u'", 1)[1]
+    topart8 = topart7.split("'",1)[0]
+    #Fifth artist
+    topart9 = topart7.split("u'name': u'", 1)[1]
+    topart10 = topart9.split("'",1)[0]
+    topartists = '{}, {}, {}, {}, {}'.format(topart2, topart4, topart6, topart8, topart10)
+
+
+    responsedesc = http.get_json(api_url, method="tag.getInfo",
+                                 api_key=api_key, tag=genretag)
+
+    tagdesc = responsedesc["tag"]["wiki"]
+
+    genredesc = tagdesc["summary"]
+    genredesc = re.sub('<[^>]*>', '', genredesc)
+    #genredesc = genredesc.split(".", 1)[0]
+    genredesc = genredesc.replace("&quot;", "")
+    genredesc = (genredesc[:225] + '...') if len(genredesc) > 225 else genredesc
+
+
+    out = ''
+
+    if tagname:
+        out += u'\x02{}\x0f: '.format(tagname)
+    if genredesc:
+        out += u'{}'.format(genredesc)
+    if similartag:
+        out += u' \x02Similar genres\x0f: ({})'.format(similartag)
+    if topartists:
+        out += u' \x02Top artists\x0f: ({})'.format(topartists)
+    if linkshort:
+        out += u' ({})'.format(linkshort)
+
+    return out
+
+    
 
 
 @hook.command('gi', autohelp=False)
