@@ -328,14 +328,16 @@ def genre(inp, nick='', db=None, bot=None, notice=None):
     tagdetails = response["results"]["tagmatches"]
 
     
-    if "url" in tagdetails["tag"]:
-        link = tagdetails["tag"]["url"]
-        linkshort = web.isgd(link)
-        tagname = response["results"]["opensearch:Query"]["searchTerms"]
-        tagname = tagname.title()
-    else:
-        return "Error: No such genre, check spelling."
-
+    try:
+        if "url" in tagdetails["tag"]:
+            link = tagdetails["tag"]["url"]
+            linkshort = web.isgd(link)
+            tagname = response["results"]["opensearch:Query"]["searchTerms"]
+            tagname = tagname.title()
+        else:
+            return "Error: No such genre, check spelling."
+    except TypeError:
+        return "Error: No description found of this genre."
     responsesimilar = http.get_json(api_url, method="tag.getsimilar",
                                     api_key=api_key, tag=genretag)
 
@@ -387,12 +389,14 @@ def genre(inp, nick='', db=None, bot=None, notice=None):
 
     tagdesc = responsedesc["tag"]["wiki"]
 
-    genredesc = tagdesc["summary"]
-    genredesc = re.sub('<[^>]*>', '', genredesc)
-    #genredesc = genredesc.split(".", 1)[0]
-    genredesc = genredesc.replace("&quot;", "")
-    genredesc = (genredesc[:225] + '...') if len(genredesc) > 225 else genredesc
-
+    try:
+        genredesc = tagdesc["summary"]
+        genredesc = re.sub('<[^>]*>', '', genredesc)
+        #genredesc = genredesc.split(".", 1)[0]
+        genredesc = genredesc.replace("&quot;", "")
+        genredesc = (genredesc[:225] + '...') if len(genredesc) > 225 else genredesc
+    except TypeError:
+        return "Error: No summary found for this genre, check spelling."
 
     out = ''
 
