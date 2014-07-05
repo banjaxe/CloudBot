@@ -3,6 +3,7 @@ from util import hook, http, timesince, web
 from datetime import datetime
 import time
 import re
+import logging
 
 api_url = "http://ws.audioscrobbler.com/2.0/?format=json"
 
@@ -35,8 +36,6 @@ def lastfm(inp, nick='', db=None, bot=None, notice=None):
 
     response = http.get_json(api_url, method="user.getrecenttracks",
                              api_key=api_key, user=user, limit=1)
-
-    
 
     if 'error' in response:
         return "Error: {}.".format(response["message"])
@@ -89,51 +88,29 @@ def lastfm(inp, nick='', db=None, bot=None, notice=None):
     else:
         playcounts = 0
 
+    toptags = http.get_json(api_url, method="artist.gettoptags",
+                              api_key=api_key, artist=artist)
+    genreList = []
+    genres = "("
 
-    if "tag" in track2["toptags"]:
-        genres1 = track2["toptags"]["tag"]
-        genresstr = str(genres1)
-        #First genre
-        genres3 = genresstr.split("u'name': u'" ,1)[1]
-        genres4 = genres3.split("'",1)[0]
-        genres = genres4
-        
+    if "tag" in toptags["toptags"]:
+        for(i, tag) in enumerate(toptags["toptags"]["tag"]):
+            genreList.append(tag["name"])
+            if(i == 2):
+                break
+        for singleGenre in genreList:
+            if(singleGenre == genreList[-1]):
+                genres += u"{}".format(singleGenre)
+            else:
+		genres += u"{}, ".format(singleGenre)
     else:
-        genres = "(No tags found)"
-    try:
-        #Second genre
-        genres5 = genres3.split("u'name': u'", 1)[1]
-        genres6 = genres5.split("'",1)[0]
-        genres = genres4, genres6
-        genres = str(genres)
-        genres = genres.replace("'", "")
-    except UnboundLocalError:
-        genres = "(No tags found)"
-    except IndexError:
-        genres = '({})'.format(genres)
-        
-    try:
-        #Third genre
-        genres7 = genres5.split("u'name': u'", 1)[1]
-        genres8 = genres7.split("'",1)[0]
-        genres = genres4, genres6, genres8
-        genres = str(genres)
-        genres = genres.replace("'", "")
-    except UnboundLocalError:
-        genres = '{}'.format(genres)
-    except IndexError:
-        genres = '{}'.format(genres)
-    
+        genres = "(No tags)"
 
-        
     length1 = track2["duration"]
     lengthsec = float(length1) / 1000
     length = time.strftime('%M:%S', time.gmtime(lengthsec))
     length = length.lstrip("0")
 
-
-    
-    
     out = u'{} {} "{}"'.format(user, status, title)
     
     if artist:
