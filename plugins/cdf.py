@@ -8,7 +8,7 @@ def cdf(inp, conn=None, bot=None,nick=None, chan=None):
     """cdf -- Displays countdown before California Death Fest 2015
     """
 
-    delta = datetime(2015, 10, 09) - datetime.now()
+    delta = datetime(2015, 10,9) - datetime.now()
 
     # JOKE HUEHUEHUE
     return "{} days before CDF 2015!".format(delta.days)
