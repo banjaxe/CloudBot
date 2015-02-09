@@ -68,7 +68,11 @@ def lastfm(inp, nick='', db=None, bot=None, notice=None):
     album = track["album"]["#text"]
     artist = track["artist"]["#text"]
     link = track["url"]
-    linkshort = web.isgd(link)
+
+    try:
+        link = web.isgd(link)
+    except:
+        print "Error shortening link"
 
     title2 = unicode(title)
     artist2 = unicode(artist)
@@ -125,8 +129,6 @@ def lastfm(inp, nick='', db=None, bot=None, notice=None):
         out += u' [plays: {}]'.format(playcounts)
     if genres:
         out += u' {}'.format(genres)
-    if linkshort:
-        out += u' ({})'.format(linkshort)
 
     # append ending based on what type it was
     out += ending
@@ -308,7 +310,12 @@ def genre(inp, nick='', db=None, bot=None, notice=None):
     try:
         if "url" in tagdetails["tag"]:
             link = tagdetails["tag"]["url"]
-            linkshort = web.isgd(link)
+
+            try:
+                link = web.isgd(link)
+            except:
+                print "Error shortening link"
+
             tagname = response["results"]["opensearch:Query"]["searchTerms"]
             tagname = tagname.title()
         else:
