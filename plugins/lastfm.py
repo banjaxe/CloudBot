@@ -105,6 +105,7 @@ def lastfm(inp, nick='', db=None, bot=None, notice=None):
         for singleGenre in genreList:
             if(singleGenre == genreList[-1]):
                 genres += u"{}".format(singleGenre)
+                genres += ")"
             else:
 		genres += u"{}, ".format(singleGenre)
     else:
