@@ -392,8 +392,6 @@ def genre(inp, nick='', db=None, bot=None, notice=None):
         out += u' \x02Similar genres\x0f: ({})'.format(similartag)
     if topartists:
         out += u' \x02Top artists\x0f: ({})'.format(topartists)
-    if linkshort:
-        out += u' ({})'.format(linkshort)
 
     return out
 
